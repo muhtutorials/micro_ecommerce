@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {# autocomplete="off" prevents firefox from saving form-TOTAL_FORMS value on page refresh #}
+    <form method="post" enctype="multipart/form-data" autocomplete="off">
+        {% csrf_token %}
+        <div id="product-form" class="mb-3">
+            {{ form.as_p }}
+        </div>
+        <div id="attachments">
+            {# iteration over formset breaks validation if hidden fields not included in it #}
+            {{ formset.as_p }}
+        </div>
+        <button type="button" class="btn-submit" id="add-attachment-button">Add Attachment</button>
+        <button type="submit" class="btn-submit">Update</button>
+    </form>
+
+    <div id="blank-form" class="hidden">
+        {{ formset.empty_form }}
+    </div>
+
+    <script>
+        const blankForm = document.getElementById('blank-form');
+        const addAttachmentsContainer = document.getElementById('attachments');
+        const addAttachmentButton = document.getElementById('add-attachment-button');
+        const totalFormsHiddenField = document.getElementById('id_form-TOTAL_FORMS');
+        addAttachmentButton.addEventListener('click', handleAttachmentButtonClick);
+
+        function handleAttachmentButtonClick() {
+            if (blankForm) {
+                const newForm = blankForm.cloneNode(true);
+                let totalForms = parseInt(totalFormsHiddenField.value);
+                newForm.innerHTML = newForm.innerHTML.replaceAll('__prefix__', totalForms);
+                totalFormsHiddenField.value = totalForms + 1;
+                newForm.classList.add('attachment-form');
+                newForm.classList.remove('hidden');
+                newForm.removeAttribute('id');
+                addAttachmentsContainer.appendChild(newForm);
+            }
+        }
+    </script>
+{% endblock %}

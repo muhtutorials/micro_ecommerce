@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="flex flex-col md:flex-row">
+        <div class="w-full md:w-3/4 space-y-4">
+            <h2 class="text-4xl font-bold dark:text-white">{{ product.name }}</h2>
+            <p class="mb-3 text-gray-500 dark:text-gray-400 first-line:uppercase first-line:tracking-widest first-letter:text-7xl first-letter:font-bold first-letter:text-gray-900 dark:first-letter:text-gray-100 first-letter:mr-3 first-letter:float-left">Track work across the enterprise through an open, collaborative platform. Link issues across Jira and ingest data from other software development tools, so your IT support and operations teams have richer contextual information to rapidly respond to requests, incidents, and changes.</p>
+            <p class="text-gray-500 dark:text-gray-400">Deliver great service experiences fast - without the complexity of traditional ITSM solutions.Accelerate critical development work, eliminate toil, and deploy changes with ease, with a complete audit trail for every change.</p>
+            {% include 'products/attachments_table.html' with attachments=product.productattachment_set.all is_owner=is_owner %}
+        </div>
+        <div class="w-full md:w-1/4 space-y-4">
+            {% if is_owner %}
+                <p class="text-center text-green-500">You own this product</p>
+            {% else %}
+                <div>
+                    {% include 'purchases/buy-btn-form.html' with product=product %}
+                </div>
+            {% endif %}
+            {% if product.image %}
+                <div class="grid gap-4">
+                    <div>
+                        <img class="h-auto max-w-full rounded-lg" src="{{ product.image.url }}" alt="">
+                    </div>
+                </div>
+            {% endif %}
+            {% if form %}
+                <h3>Update product</h3>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn-submit">Update</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
